@@ -1,4 +1,4 @@
-# CalcLang
+# Calc Lang
 
 A simple calculator language that supports basic arithmetic operations.
 
@@ -12,10 +12,10 @@ A simple calculator language that supports basic arithmetic operations.
 
 ```bash
 # Build CLI
-go build -o calclang-cli ./cmd/cli
+go build -o calc-cli ./cmd/cli
 
 # Build Server
-go build -o calclang-server ./cmd/server
+go build -o calc-server ./cmd/server
 ```
 
 ## Using the CLI
@@ -23,7 +23,7 @@ go build -o calclang-server ./cmd/server
 Run the CLI:
 
 ```bash
-./calclang-cli
+./calc-cli
 ```
 
 Example usage:
@@ -39,7 +39,7 @@ Example usage:
 Start the server:
 
 ```bash
-./calclang-server
+./calc-server
 ```
 
 The server will start on port 8080.
