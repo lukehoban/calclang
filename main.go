@@ -25,6 +25,7 @@ type VarRef struct {
 type Fun struct {
 	param string
 	body  AST
+	arg   AST // The argument to apply when evaluating the function
 }
 
 // Add represents an addition operation with two values
@@ -56,9 +57,15 @@ func EvalWithEnv(ast AST, env map[string]int) int {
 	case VarRef:
 		return env[node.name]
 	case Fun:
-		// For the sample FUN x ADD x 1 2, we evaluate by applying x=2
-		env[node.param] = 2 // Fixed argument for demonstration
-		return EvalWithEnv(node.body, env)
+		// Evaluate the argument and bind it to the parameter
+		argValue := EvalWithEnv(node.arg, env)
+		// Create a new environment with the parameter binding
+		newEnv := make(map[string]int)
+		for k, v := range env {
+			newEnv[k] = v
+		}
+		newEnv[node.param] = argValue
+		return EvalWithEnv(node.body, newEnv)
 	default:
 		return 0
 	}
@@ -91,10 +98,12 @@ func Parse(input string) AST {
 			return nil
 		}
 		param := parts[1]
-		// Parse the rest as a body expression
-		bodyStr := strings.Join(parts[2:], " ")
+		// The last part is the argument
+		arg := parseValue(parts[len(parts)-1])
+		// Parse the middle parts as the body expression
+		bodyStr := strings.Join(parts[2:len(parts)-1], " ")
 		body := Parse(bodyStr)
-		return Fun{param, body}
+		return Fun{param, body, arg}
 	default:
 		return nil
 	}
