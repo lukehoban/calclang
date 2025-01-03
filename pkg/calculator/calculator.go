@@ -1,9 +1,6 @@
-package main
+package calculator
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -13,30 +10,30 @@ type AST interface{}
 
 // Val represents a numeric value
 type Val struct {
-	value int
+	Value int
 }
 
 // Add represents an addition operation with two values
 type Add struct {
-	left  Val
-	right Val
+	Left  Val
+	Right Val
 }
 
 // Sub represents a subtraction operation with two values
 type Sub struct {
-	left  Val
-	right Val
+	Left  Val
+	Right Val
 }
 
 // Eval evaluates an AST node and returns its result
 func Eval(ast AST) int {
 	switch node := ast.(type) {
 	case Add:
-		return node.left.value + node.right.value
+		return node.Left.Value + node.Right.Value
 	case Sub:
-		return node.left.value - node.right.value
+		return node.Left.Value - node.Right.Value
 	case Val:
-		return node.value
+		return node.Value
 	default:
 		return 0
 	}
@@ -45,8 +42,19 @@ func Eval(ast AST) int {
 // Parse converts a string expression into an operation struct
 func Parse(input string) AST {
 	parts := strings.Split(input, " ")
-	left, _ := strconv.Atoi(parts[1])
-	right, _ := strconv.Atoi(parts[2])
+	if len(parts) != 3 {
+		return nil
+	}
+	
+	left, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return nil
+	}
+	
+	right, err := strconv.Atoi(parts[2])
+	if err != nil {
+		return nil
+	}
 
 	switch parts[0] {
 	case "ADD":
@@ -55,29 +63,5 @@ func Parse(input string) AST {
 		return Sub{Val{left}, Val{right}}
 	default:
 		return nil
-	}
-}
-
-func main() {
-	fmt.Printf("CALCLANG\n\n")
-
-	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Print("> ")
-		if !scanner.Scan() {
-			break
-		}
-
-		input := scanner.Text()
-		if input == "" {
-			continue
-		}
-
-		expr := Parse(input)
-		if expr == nil {
-			fmt.Println("Invalid expression")
-			continue
-		}
-		fmt.Println(Eval(expr))
 	}
 }
