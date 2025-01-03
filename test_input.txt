@@ -1,0 +1,3 @@
+FUN x ADD x 1 2
+FUN y SUB y 5 3
+FUN z ADD z z 4
