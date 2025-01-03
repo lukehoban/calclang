@@ -8,44 +8,36 @@ import (
 	"strings"
 )
 
-// AST represents an abstract syntax tree node
 type AST interface{}
 
-// Val represents a numeric value
 type Val struct {
 	value int
 }
 
-// VarRef represents a variable reference
 type VarRef struct {
 	name string
 }
 
-// Fun represents a function definition
 type Fun struct {
 	param string
 	body  AST
-	arg   AST // The argument to apply when evaluating the function
+	arg   AST
 }
 
-// Add represents an addition operation with two values
 type Add struct {
 	left  AST
 	right AST
 }
 
-// Sub represents a subtraction operation with two values
 type Sub struct {
 	left  AST
 	right AST
 }
 
-// Eval evaluates an AST node and returns its result
 func Eval(ast AST) int {
 	return EvalWithEnv(ast, make(map[string]int))
 }
 
-// EvalWithEnv evaluates an AST node with a given variable environment
 func EvalWithEnv(ast AST, env map[string]int) int {
 	switch node := ast.(type) {
 	case Add:
@@ -57,9 +49,7 @@ func EvalWithEnv(ast AST, env map[string]int) int {
 	case VarRef:
 		return env[node.name]
 	case Fun:
-		// Evaluate the argument and bind it to the parameter
 		argValue := EvalWithEnv(node.arg, env)
-		// Create a new environment with the parameter binding
 		newEnv := make(map[string]int)
 		for k, v := range env {
 			newEnv[k] = v
@@ -71,7 +61,6 @@ func EvalWithEnv(ast AST, env map[string]int) int {
 	}
 }
 
-// Parse converts a string expression into an operation struct
 func Parse(input string) AST {
 	parts := strings.Split(input, " ")
 	if len(parts) < 1 {
@@ -98,9 +87,7 @@ func Parse(input string) AST {
 			return nil
 		}
 		param := parts[1]
-		// The last part is the argument
 		arg := parseValue(parts[len(parts)-1])
-		// Parse the middle parts as the body expression
 		bodyStr := strings.Join(parts[2:len(parts)-1], " ")
 		body := Parse(bodyStr)
 		return Fun{param, body, arg}
@@ -109,7 +96,6 @@ func Parse(input string) AST {
 	}
 }
 
-// parseValue converts a string to either a Val or VarRef
 func parseValue(s string) AST {
 	if val, err := strconv.Atoi(s); err == nil {
 		return Val{val}
